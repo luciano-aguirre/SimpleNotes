@@ -15,4 +15,14 @@ Note.schema = {
     }
 };
 
-export default new Realm({schema: [Note], schemaVersion: 2});
+class UserConfig extends Realm.Object {}
+UserConfig.schema = {
+    name: 'UserConfig',
+    primaryKey: 'id',
+    properties: {
+        id: 'int',
+        password: 'string'
+    }
+};
+
+export default new Realm({schema: [Note, UserConfig], schemaVersion: 3});

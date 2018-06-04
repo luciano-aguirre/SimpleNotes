@@ -63,24 +63,25 @@ export default class NoteScreen extends Component<Props> {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>
+        {/*  <Text style={styles.title}>
             {this.state.editionMode?'Edit note':'New note'}
-          </Text>  
+    </Text>  */}
           <Text 
-            style={styles.add}
+            style={styles.action}
             onPress={ () => this.saveNote() }>
               {this.state.editionMode?'Save':'Add'}
           </Text>         
         </View>
         <View style={styles.body}>
-          <FormLabel>Title</FormLabel>
+          <FormLabel labelStyle={{color: 'black'}}>Title</FormLabel>
           <FormInput 
             value={this.state.title}
             onChangeText={(value) => this.setState({title: value}) }
-            placeholder={"Please enter the title"}/>
+            placeholder={"Please enter the title"}
+            underlineColorAndroid = {0}/>
           {/* <FormValidationMessage>Error message</FormValidationMessage> */}
 
-          <FormLabel>Description</FormLabel>
+          <FormLabel labelStyle={{color: 'black'}}>Description</FormLabel>
           <FormInput 
             value={this.state.description}
             onChangeText={(value) => this.setState({description: value}) }
@@ -93,7 +94,7 @@ export default class NoteScreen extends Component<Props> {
             checked={ this.state.privated }//this.state.checked}
             checkedColor='black'
             onIconPress={ () => this.setState({privated: !this.state.privated}) }
-            containerStyle={{backgroundColor: '#F5FCFF', borderWidth: 0}}
+            containerStyle={{backgroundColor: 'white', borderWidth: 0}}
           />
           {/* <FormValidationMessage>Error message</FormValidationMessage> */}
          
@@ -117,23 +118,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: 'white',
   },
   header: {
     flex: 1, 
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  //  flexDirection: 'row',
+  //  justifyContent: 'space-between',
+    paddingTop: 5,
+    paddingLeft: 5,
+    paddingRight: 5,
+    //paddingBottom: -50,
+    borderBottomColor: 'black',
+    borderBottomWidth: 1,
+    backgroundColor: 'black'
   },
   title: {
     fontSize: 20,
     textAlign: 'left',
+    color: 'black',
+    fontWeight: 'bold',
+    color: 'white'
   },  
-  add: {
+  action: {
     fontSize: 20,
     textAlign: 'right',
+    color: 'black',
+    fontWeight: 'bold',
+    color: 'white'
   },
   body: {
-    flex: 14
+    flex: 14,
+   // marginTop: -15
+ //  backgroundColor: 'white'
   },
   textAreaContainer: {
     //borderColor: COLORS.grey20,
