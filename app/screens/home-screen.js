@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 5,
+    paddingTop: 10,
     paddingLeft: 5,
     paddingRight: 5,
  //   borderBottomColor: 'black',

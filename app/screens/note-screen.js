@@ -11,6 +11,7 @@ import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import realm from '../realm';
+import ActionButton from 'react-native-action-button';
 
 type Props = {};
 export default class NoteScreen extends Component<Props> {
@@ -100,18 +101,15 @@ export default class NoteScreen extends Component<Props> {
             onIconPress={ () => this.setState({privated: !this.state.privated}) }
             containerStyle={{backgroundColor: 'white', borderWidth: 0}}
           />
-          {/* <FormValidationMessage>Error message</FormValidationMessage> */}
-         
-        {/*     <View style={styles.textAreaContainer} >
-              <TextInput
-                style={styles.textArea}
-                underlineColorAndroid="transparent"
-                placeholder={"Type something"}
-                placeholderTextColor={"grey"}
-                numberOfLines={10}
-                multiline={true}
-              />
-            </View> */}
+
+          {this.state.editionMode && 
+            <ActionButton
+              buttonColor="rgba(231,76,60,1)"
+            // onPress={() => { alert("hi")}}
+              degrees={0}
+              renderIcon={() => <Icon name='trash' size={30} />}
+          />}          
+          
         </View>        
       </View>
     );
@@ -128,7 +126,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 5,
+    paddingTop: 10,
     paddingLeft: 5,
     paddingRight: 5,
     //paddingBottom: -50,
@@ -164,5 +162,10 @@ const styles = StyleSheet.create({
   textArea: {
     height: 150,
     justifyContent: "flex-start"
+  },
+  actionButtonIcon: {
+    fontSize: 20,
+    height: 22,
+    color: 'white',
   }
 });
