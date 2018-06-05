@@ -60,37 +60,41 @@ export default class NoteScreen extends Component<Props> {
   }
 
   render() {
+    const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-        {/*  <Text style={styles.title}>
-            {this.state.editionMode?'Edit note':'New note'}
-    </Text>  */}
+          <Icon
+            name='arrow-left'
+            color='white'
+            size={30}
+            onPress={ () => navigate('Home') }//navigate('Note', {}) }
+          />        
           <Text 
             style={styles.action}
             onPress={ () => this.saveNote() }>
-              {this.state.editionMode?'Save':'Add'}
+              {this.state.editionMode?'Guardar':'Agregar'}
           </Text>         
         </View>
         <View style={styles.body}>
-          <FormLabel labelStyle={{color: 'black'}}>Title</FormLabel>
+          <FormLabel labelStyle={{color: 'black'}}>Título</FormLabel>
           <FormInput 
             value={this.state.title}
             onChangeText={(value) => this.setState({title: value}) }
-            placeholder={"Please enter the title"}
+            placeholder={"Ingrese el título de la nota"}
             underlineColorAndroid = {0}/>
           {/* <FormValidationMessage>Error message</FormValidationMessage> */}
 
-          <FormLabel labelStyle={{color: 'black'}}>Description</FormLabel>
+          <FormLabel labelStyle={{color: 'black'}}>Descripción</FormLabel>
           <FormInput 
             value={this.state.description}
             onChangeText={(value) => this.setState({description: value}) }
-            placeholder={"Please enter the description"}
+            placeholder={"Ingrese la descripción de la nota"}
             multiline
             underlineColorAndroid = {0}/>
 
           <CheckBox
-            title='Private'
+            title='Privada'
             checked={ this.state.privated }//this.state.checked}
             checkedColor='black'
             onIconPress={ () => this.setState({privated: !this.state.privated}) }
@@ -122,18 +126,19 @@ const styles = StyleSheet.create({
   },
   header: {
     flex: 1, 
-  //  flexDirection: 'row',
-  //  justifyContent: 'space-between',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingTop: 5,
     paddingLeft: 5,
     paddingRight: 5,
     //paddingBottom: -50,
-    borderBottomColor: 'black',
-    borderBottomWidth: 1,
-    backgroundColor: 'black'
+   // borderBottomColor: 'black',
+   // borderBottomWidth: 1,
+    //backgroundColor: 'black'
+    backgroundColor: '#2196F3'  
   },
   title: {
-    fontSize: 20,
+    fontSize: 30,
     textAlign: 'left',
     color: 'black',
     fontWeight: 'bold',

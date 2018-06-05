@@ -33,19 +33,19 @@ export default class ConfigScreen extends Component<Props> {
 
   saveConfig() {
     if (this.state.password === null || this.state.password === '') {
-        alert('Please enter the password');
+        alert('Ingrese el PIN actual');
     }
     else if (this.state.newPassword === null || this.state.newPassword === '') {
-        alert('Please enter the new password');
+        alert('Ingrese el nuevo PIN');
     }
     else if (this.state.repeatedPassword === null || this.state.repeatedPassword === '') {
-        alert('Please repeat the new password');
+        alert('Repita el nuevo PIN');
     }
     else if (this.state.currentConfig.password !== this.state.password) {
-        alert('The password entered does not match the current one');
+        alert('El PIN ingresado no coincide con el actual');
     }
     else if (this.state.newPassword !== this.state.repeatedPassword){
-        alert('the repeated password does not match the new password');
+        alert('El nuevo PIN no coincide con la confirmación');
     }
     else {
         realm.write(() => {
@@ -67,16 +67,20 @@ export default class ConfigScreen extends Component<Props> {
   }
 
   render() {
+    const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
         <View style={styles.header}>            
-    {/* <Text style={styles.title}>
-            Configuration
-          </Text> */} 
+          <Icon
+            name='arrow-left'
+            color='white'
+            size={30}
+            onPress={ () => navigate('Home') }//navigate('Note', {}) }
+          />
           <Text 
             style={styles.save}
             onPress={ () => this.saveConfig() }>
-              Save
+              Guardar
           </Text>         
         </View>
         <View style={styles.body}> 
@@ -84,28 +88,28 @@ export default class ConfigScreen extends Component<Props> {
           <FormInput 
             value={this.state.title}
             onChangeText={(value) => this.setState({password: value}) }
-            placeholder={"Please enter the PIN"}
+            placeholder={"Ingrese el PIN actual"}
             secureTextEntry={true}
             maxLength={4}
             keyboardType='numeric'
             underlineColorAndroid = {0}/>
           {/* <FormValidationMessage>Error message</FormValidationMessage> */}
 
-          <FormLabel labelStyle={{color: 'black'}}>New PIN</FormLabel>
+          <FormLabel labelStyle={{color: 'black'}}>Nuevo PIN</FormLabel>
           <FormInput 
             value={this.state.description}
             onChangeText={(value) => this.setState({newPassword: value}) }
-            placeholder={"Please enter the new PIN"}
+            placeholder={"Ingrese el nuevo PIN"}
             secureTextEntry={true}
             maxLength={4}
             keyboardType='numeric'
             underlineColorAndroid = {0}/>
 
-        <FormLabel labelStyle={{color: 'black'}}>Repeat new PIN</FormLabel>
+        <FormLabel labelStyle={{color: 'black'}}>Confirmar PIN</FormLabel>
           <FormInput 
             value={this.state.description}
             onChangeText={(value) => this.setState({repeatedPassword: value}) }
-            placeholder={"Please repeat the new PIN"}
+            placeholder={"Repita el nuevo PIN"}
             secureTextEntry={true}
             maxLength={4}
             keyboardType='numeric'
@@ -118,7 +122,7 @@ export default class ConfigScreen extends Component<Props> {
                 style={{marginLeft: 5, marginRight: 5}}
             />
             <Text style={{color: 'red', fontWeight: 'bold'}}>
-                PIN is a 4 number digit
+                Un PIN es un número de 4 dígitos
             </Text>
         </View>          
           {/* <FormValidationMessage>Error message</FormValidationMessage> */}
@@ -136,15 +140,16 @@ const styles = StyleSheet.create({
   },
   header: {
     flex: 1, 
- //   flexDirection: 'row',
-  //  justifyContent: 'space-between',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingTop: 5,
     paddingLeft: 5,
     paddingRight: 5,
     //paddingBottom: -50,
-    borderBottomColor: 'black',
-    borderBottomWidth: 1,
-    backgroundColor: 'black'
+  //  borderBottomColor: 'black',
+   // borderBottomWidth: 1,
+   // backgroundColor: 'black'
+   backgroundColor: '#2196F3'  
   },
   title: {
     fontSize: 20,

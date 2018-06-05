@@ -12,7 +12,7 @@ import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import realm from '../realm';
 import Modal from "react-native-modal";
-
+import moment from 'moment';
 
 type Props = {};
 export default class HomeScreen extends Component<Props> {
@@ -24,7 +24,7 @@ export default class HomeScreen extends Component<Props> {
     super(props);
     this.state = {
       currentConfig: (realm.objects('UserConfig').length === 0) ? null : realm.objects('UserConfig')[0],
-      notes: realm.objects('Note').sorted('creationDate'),
+      notes: realm.objects('Note').sorted('creationDate', true),
       firstTime: (realm.objects('UserConfig').length === 0),
       actualNote: null,
       visibleModal: (realm.objects('UserConfig').length === 0),
@@ -33,7 +33,7 @@ export default class HomeScreen extends Component<Props> {
     }
 
     realm.addListener('change', () => {
-      this.setState({notes: realm.objects('Note').sorted('creationDate') })
+      this.setState({notes: realm.objects('Note').sorted('creationDate', true) })
     });
     
     this.viewNote = this.viewNote.bind(this);
@@ -42,11 +42,11 @@ export default class HomeScreen extends Component<Props> {
 
   validatePassword() {
     if (this.state.firstTime) {
-      if (this.state.password.length !== 4) {
+      if (this.state.password === null || this.state.password.length !== 4) {
         this.setState({errorMessage: true, password: null});
       }
       else {
-        realm.write(() => {
+       realm.write(() => {
           realm.create('UserConfig', {id: 1, password: this.state.password});
           this.setState({currentConfig: realm.objects('UserConfig')[0].value, firstTime: false, visibleModal: false, errorMessage: false, password: null})
         });
@@ -82,7 +82,7 @@ export default class HomeScreen extends Component<Props> {
             onPress={ () => navigate('Config') }//navigate('Note', {}) }
           />
           <Text style={styles.title}>
-              {this.state.notes.length} notes
+              {this.state.notes.length} notas
           </Text>  
           <Icon
             name='plus'
@@ -98,17 +98,19 @@ export default class HomeScreen extends Component<Props> {
               this.state.notes.map((note, i) => (
                 (note.privated)? (<ListItem
                   key={i}
-                  title={note.title}     
+                  title={note.title}
+                  subtitle={moment(note.creationDate).format("D/M/YY")}     
                   leftIcon={{name: 'lock', size: 25}}
                   onPress={() => this.viewNote(note)}
-                  titleStyle={{color: 'black'}} 
+                  titleStyle={{color: 'black', fontWeight: 'bold'}} 
                   containerStyle={{backgroundColor: 'white'}}
                 />): (<ListItem
                         key={i}
-                        title={note.title}       
+                        title={note.title}
+                        subtitle={moment(note.creationDate).format("D/M/YY")}       
                         onPress={() => this.viewNote(note)}
                         containerStyle={styles.note}    
-                        titleStyle={{color: 'black'}}                    
+                        titleStyle={{color: 'black', fontWeight: 'bold'}}                    
                     />)                
               ))                  
           }
@@ -159,9 +161,9 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingLeft: 5,
     paddingRight: 5,
-    borderBottomColor: 'black',
-    borderBottomWidth: 1,  
-    backgroundColor: 'black'  
+ //   borderBottomColor: 'black',
+ //   borderBottomWidth: 1,  
+    backgroundColor: '#2196F3'  
   //  borderTopColor: 'black',
   //      borderTopWidth: 1,
   },
