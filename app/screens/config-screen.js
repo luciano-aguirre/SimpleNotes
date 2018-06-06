@@ -4,9 +4,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
+  KeyboardAvoidingView 
 } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, Header } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import realm from '../realm';
@@ -69,8 +70,8 @@ export default class ConfigScreen extends Component<Props> {
   render() {
     const { navigate } = this.props.navigation;
     return (
-      <View style={styles.container}>
-        <View style={styles.header}>            
+      <View  style={styles.container}>
+        {/* <View style={styles.header}>            
           <Icon
             name='arrow-left'
             color='white'
@@ -82,7 +83,12 @@ export default class ConfigScreen extends Component<Props> {
             onPress={ () => this.saveConfig() }>
               Guardar
           </Text>         
-        </View>
+        </View> */}
+        <Header
+          leftComponent={{ icon: 'arrow-back', color: 'white', size: 30, onPress: () => navigate('Home') }}//navigate('Note', {}) }}
+          centerComponent={{ text: 'Configuración', style: { color: 'white', fontSize: 20 } }}
+          rightComponent={{ icon: 'save', color: 'white', size: 30 }}
+        />
         <View style={styles.body}> 
           <FormLabel labelStyle={{color: 'black'}}>PIN</FormLabel>
           <FormInput 
@@ -127,14 +133,14 @@ export default class ConfigScreen extends Component<Props> {
         </View>          
           {/* <FormValidationMessage>Error message</FormValidationMessage> */}
         </View>        
-      </View>
+      </View >
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'column',
     backgroundColor: 'white',
   },
@@ -149,7 +155,7 @@ const styles = StyleSheet.create({
   //  borderBottomColor: 'black',
    // borderBottomWidth: 1,
    // backgroundColor: 'black'
-   backgroundColor: '#2196F3'  
+   backgroundColor: '#2196F3'
   },
   title: {
     fontSize: 20,
@@ -165,7 +171,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   body: {
-    flex: 14,
+    flex: 14
    // backgroundColor: 'white'
   },
   textAreaContainer: {

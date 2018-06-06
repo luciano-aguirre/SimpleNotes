@@ -4,14 +4,16 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View
 } from 'react-native';
 import { CheckBox, List, ListItem } from 'react-native-elements';
-import { Button } from 'react-native-elements';
+import { Button, Header } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import realm from '../realm';
 import ActionButton from 'react-native-action-button';
+import Modal from "react-native-modal";
 
 type Props = {};
 export default class NoteScreen extends Component<Props> {
@@ -25,6 +27,7 @@ export default class NoteScreen extends Component<Props> {
     if (params.note) {
       this.state = {
         editionMode: true,
+        delete: false,
         id: params.note.id,
         title: params.note.title,
         description: params.note.description,
@@ -34,6 +37,7 @@ export default class NoteScreen extends Component<Props> {
     } else {
         this.state = {
           editionMode: false,
+          delete: false,
           id: ((realm.objects('Note').length > 0)?realm.objects('Note').max('id'):0) + 1,
           title: '',
           description: '',
@@ -43,7 +47,18 @@ export default class NoteScreen extends Component<Props> {
     }
     
     this.saveNote = this.saveNote.bind(this);
+    this.deleteNote = this.deleteNote.bind(this);
     //this.titleRef = null;
+  }
+
+  deleteNote() {
+    if (this.state.delete) {
+      const { params } = this.props.navigation.state;
+      realm.write(() => {
+        realm.delete(params.note);
+      });
+      this.props.navigation.navigate('Home');
+    }
   }
 
   saveNote() {
@@ -64,7 +79,7 @@ export default class NoteScreen extends Component<Props> {
     const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <Icon
             name='arrow-left'
             color='white'
@@ -76,7 +91,12 @@ export default class NoteScreen extends Component<Props> {
             onPress={ () => this.saveNote() }>
               {this.state.editionMode?'Guardar':'Agregar'}
           </Text>         
-        </View>
+        </View> */}
+        <Header
+          leftComponent={{ icon: 'arrow-back', color: 'white', size: 30, onPress: () => navigate('Home') }}//navigate('Note', {}) }}
+          centerComponent={{ text: this.state.editionMode?'Edición nota':'Nueva nota', style: { color: 'white', fontSize: 20 } }}
+          rightComponent={{ icon: 'save', color: 'white', size: 30, onPress: () => this.saveNote() }}
+        />
         <View style={styles.body}>
           <FormLabel labelStyle={{color: 'black'}}>Título</FormLabel>
           <FormInput 
@@ -105,10 +125,28 @@ export default class NoteScreen extends Component<Props> {
           {this.state.editionMode && 
             <ActionButton
               buttonColor="rgba(231,76,60,1)"
-            // onPress={() => { alert("hi")}}
+              onPress={() => this.setState({delete: true})}
               degrees={0}
               renderIcon={() => <Icon name='trash' size={30} />}
-          />}          
+          />}
+
+        <Modal isVisible={this.state.delete}>
+          <View style={styles.modalContent}>
+            <Text>¿Está seguro de que desea eliminar la nota?</Text>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity onPress={() => this.setState({delete: false})}>
+                <View style={styles.modalButton}>
+                  <Text>Cancel</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => this.deleteNote()}>
+                <View style={styles.modalButton}>
+                  <Text>OK</Text>
+                </View>
+              </TouchableOpacity>  
+            </View>            
+          </View>
+        </Modal>          
           
         </View>        
       </View>
@@ -167,5 +205,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     height: 22,
     color: 'white',
-  }
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)"
+  },
+  modalButton: {
+    backgroundColor: "lightblue",
+    padding: 12,
+    margin: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)"
+  },
 });

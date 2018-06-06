@@ -8,7 +8,7 @@ import {
   View
 } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
-import { Button } from 'react-native-elements';
+import { Button, Header } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import realm from '../realm';
 import Modal from "react-native-modal";
@@ -74,7 +74,12 @@ export default class HomeScreen extends Component<Props> {
 
     return (
       <View style={styles.container}> 
-        <View style={styles.header}>
+        <Header
+          leftComponent={{ icon: 'settings', color: 'white', size: 30, onPress: () => navigate('Config') }}//navigate('Note', {}) }}
+          centerComponent={{ text: this.state.notes.length + ' notas', style: { color: 'white', fontSize: 20 } }}
+          rightComponent={{ icon: 'create', color: 'white', size: 30, onPress: () => navigate('Note', {}) }}
+        />
+        {/* <View style={styles.header}>
           <Icon
             name='gear'
             color='white'
@@ -90,7 +95,7 @@ export default class HomeScreen extends Component<Props> {
             size={30}
             onPress={ () => navigate('Note', {}) }
           />
-        </View>               
+        </View>                */}
         <View style={styles.body}>
           <List
             containerStyle={{marginTop: 0}}>
