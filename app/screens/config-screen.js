@@ -11,6 +11,8 @@ import { Button, Header } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
 import realm from '../realm';
+import { sha256 } from 'react-native-sha256';
+
 
 type Props = {};
 export default class ConfigScreen extends Component<Props> {
@@ -29,10 +31,14 @@ export default class ConfigScreen extends Component<Props> {
     };
     
     this.saveConfig = this.saveConfig.bind(this);
-    //this.titleRef = null;
+    //this.titleRef = null;  
+   /* let hash;
+    sha256('1111').then(hash => {
+      hash = hash;
+    });  */
   }
 
-  saveConfig() {
+  async saveConfig() {    
     if (this.state.password === null || this.state.password === '') {
         alert('Ingrese el PIN actual');
     }
@@ -42,17 +48,18 @@ export default class ConfigScreen extends Component<Props> {
     else if (this.state.repeatedPassword === null || this.state.repeatedPassword === '') {
         alert('Repita el nuevo PIN');
     }
-    else if (this.state.currentConfig.password !== this.state.password) {
+    else if (this.state.currentConfig.password !== await sha256(this.state.password)) {
         alert('El PIN ingresado no coincide con el actual');
     }
     else if (this.state.newPassword !== this.state.repeatedPassword){
         alert('El nuevo PIN no coincide con la confirmación');
     }
     else {
+        let newPassword = await sha256(this.state.newPassword);
         realm.write(() => {
-            realm.create('UserConfig', {id: this.state.currentConfig.id, password: this.state.newPassword}, true);
-          });
-        this.props.navigation.navigate('Home');
+          realm.create('UserConfig', {id: this.state.currentConfig.id, password: newPassword}, true);
+        });
+        this.props.navigation.navigate('Home');     
     }
 
    /* if (this.state.title === null || this.state.title === '' || this.state.description === null || this.state.description === '') {
@@ -86,8 +93,8 @@ export default class ConfigScreen extends Component<Props> {
         </View> */}
         <Header
           leftComponent={{ icon: 'arrow-back', color: 'white', size: 30, onPress: () => navigate('Home') }}//navigate('Note', {}) }}
-          centerComponent={{ text: 'Configuración', style: { color: 'white', fontSize: 20 } }}
-          rightComponent={{ icon: 'save', color: 'white', size: 30 }}
+          centerComponent={{ text: 'Configuración', style: { color: 'white', fontSize: 20, fontWeight: 'bold' } }}
+          rightComponent={{ icon: 'save', color: 'white', size: 30, onPress: () => this.saveConfig().done() }}
         />
         <View style={styles.body}> 
           <FormLabel labelStyle={{color: 'black'}}>PIN</FormLabel>

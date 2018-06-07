@@ -13,6 +13,7 @@
     "react-native-action-button": "^2.8.4",
     "react-native-elements": "^0.19.1",
     "react-native-modal": "^6.1.0",
+    "react-native-sha256": "^1.1.1",
     "react-native-vector-icons": "^4.6.0",
     "react-navigation": "^2.0.4",
     "realm": "^2.7.2"

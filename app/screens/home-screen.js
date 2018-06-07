@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import realm from '../realm';
 import Modal from "react-native-modal";
 import moment from 'moment';
+import { sha256 } from 'react-native-sha256';
 
 type Props = {};
 export default class HomeScreen extends Component<Props> {
@@ -40,20 +41,19 @@ export default class HomeScreen extends Component<Props> {
     this.validatePassword = this.validatePassword.bind(this);
   }
 
-  validatePassword() {
-    if (this.state.firstTime) {
-      if (this.state.password === null || this.state.password.length !== 4) {
-        this.setState({errorMessage: true, password: null});
-      }
-      else {
-       realm.write(() => {
-          realm.create('UserConfig', {id: 1, password: this.state.password});
-          this.setState({currentConfig: realm.objects('UserConfig')[0].value, firstTime: false, visibleModal: false, errorMessage: false, password: null})
-        });
-      }
-    } else if (this.state.password === this.state.currentConfig.password) {
+  async validatePassword() {
+    if (this.state.password === null || this.state.password.length !== 4) {
+      this.setState({errorMessage: true});
+    } else if (this.state.firstTime) {
+        let newPassword = await sha256(this.state.password);
+        realm.write(() => {
+            realm.create('UserConfig', {id: 1, password: newPassword});
+            this.setState({currentConfig: realm.objects('UserConfig')[0].value, firstTime: false, visibleModal: false, errorMessage: false, password: null})
+          });
+    } else if (await sha256(this.state.password) === this.state.currentConfig.password) {
+        this.props.navigation.navigate('Note', {note: this.state.actualNote});  
         this.setState({visibleModal: false, actualNote: null, errorMessage: false, password: null}); 
-        this.props.navigation.navigate('Note', {note: this.state.actualNote});
+        
     } else {
         this.setState({errorMessage: true, password: null});
     }    
@@ -76,7 +76,7 @@ export default class HomeScreen extends Component<Props> {
       <View style={styles.container}> 
         <Header
           leftComponent={{ icon: 'settings', color: 'white', size: 30, onPress: () => navigate('Config') }}//navigate('Note', {}) }}
-          centerComponent={{ text: this.state.notes.length + ' notas', style: { color: 'white', fontSize: 20 } }}
+          centerComponent={{ text: this.state.notes.length + ' notas', style: { color: 'white', fontSize: 20, fontWeight: 'bold' } }}
           rightComponent={{ icon: 'create', color: 'white', size: 30, onPress: () => navigate('Note', {}) }}
         />
         {/* <View style={styles.header}>
@@ -122,26 +122,27 @@ export default class HomeScreen extends Component<Props> {
           </List>
           <Modal isVisible={this.state.visibleModal}>
             <View style={styles.modalContent}>
-              <Text>{this.state.firstTime ? 'Enter the PIN (4 digits) for the app' : 'Enter the PIN' }</Text>
+              <Text style={{color: 'black', fontSize: 20, textAlign: 'center'}}>{this.state.firstTime ? 'Ingrese el PIN (número de 4 dígitos) para la aplicación' : 'Ingrese el PIN' }</Text>
               { this.state.errorMessage && 
-                <Text style={{color: 'red'}}>Incorrect</Text>}
+                <Text style={{color: 'red'}}>El PIN ingresado es incorrecto</Text>}
               <TextInput 
                 secureTextEntry={true}
                 onChangeText={(text) => this.setState({password: text})}
                 maxLength={4}
                 keyboardType='numeric'
+                style={{width: 40, fontSize: 20, textAlign: 'center'}}
               />
               <View style={{flexDirection: 'row'}}>
                 {!this.state.firstTime &&
                 <TouchableOpacity onPress={() => this.setState({visibleModal: false, errorMessage: false, actualNote: null})}>
                   <View style={styles.modalButton}>
-                    <Text>Cancel</Text>
+                    <Text style={{color:'white'}}>Cancelar</Text>
                   </View>
                 </TouchableOpacity>}
 
-                <TouchableOpacity onPress={() => this.validatePassword()}>
+                <TouchableOpacity onPress={() => this.validatePassword().done()}>
                   <View style={styles.modalButton}>
-                    <Text>OK</Text>
+                    <Text style={{color:'white'}}>Aceptar</Text>
                   </View>
                 </TouchableOpacity>  
               </View>            
@@ -197,10 +198,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 4,
-    borderColor: "rgba(0, 0, 0, 0.1)"
+    borderWidth: 1,
+    borderColor: 'black'//"rgba(0, 0, 0, 0.1)"
   },
   modalButton: {
-    backgroundColor: "lightblue",
+    backgroundColor: '#476DC5',
     padding: 12,
     margin: 16,
     justifyContent: "center",
