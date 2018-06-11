@@ -14,9 +14,9 @@ import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elemen
 import realm from '../realm';
 import ActionButton from 'react-native-action-button';
 import Modal from "react-native-modal";
+import ModalAlert from '../components/modal-alert';
 
-type Props = {};
-export default class NoteScreen extends Component<Props> {
+export default class NoteScreen extends Component {
   static navigationOptions = {
     header: null,
   };
@@ -48,52 +48,36 @@ export default class NoteScreen extends Component<Props> {
     
     this.saveNote = this.saveNote.bind(this);
     this.deleteNote = this.deleteNote.bind(this);
-    //this.titleRef = null;
+    this.validateModalRef = React.createRef();
+    this.deleteModalRef = React.createRef();
   }
 
-  deleteNote() {
-    if (this.state.delete) {
+    deleteNote() {
+      //this.deleteModalRef.current.hideModal();
       const { params } = this.props.navigation.state;
       realm.write(() => {
         realm.delete(params.note);
       });
       this.props.navigation.navigate('Home');
-    }
   }
 
   saveNote() {
     if (this.state.title === null || this.state.title === '' || this.state.description === null || this.state.description === '') {
-      this.setState({showErrors: true});
+      this.validateModalRef.current.showModal();
     } else {
-      //let nextID = ((realm.objects('Note').length > 0)?realm.objects('Note').max('id'):0) + 1; // = (int) (realm.where(dbObj.class).maximumInt("id") + 1);
       realm.write(() => {
         realm.create('Note', {id: this.state.id, title: this.state.title, description: this.state.description, privated: this.state.privated, creationDate: new Date()}, this.state.editionMode);
       });
       this.props.navigation.navigate('Home');
     }
-
-  //  navigate('Home', { notes: { latitud: this.state.marcadores[0].coordinate.latitude, longitud: this.state.marcadores[0].coordinate.longitude } });
   }
 
   render() {
     const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
-        {/* <View style={styles.header}>
-          <Icon
-            name='arrow-left'
-            color='white'
-            size={30}
-            onPress={ () => navigate('Home') }//navigate('Note', {}) }
-          />        
-          <Text 
-            style={styles.action}
-            onPress={ () => this.saveNote() }>
-              {this.state.editionMode?'Guardar':'Agregar'}
-          </Text>         
-        </View> */}
         <Header
-          leftComponent={{ icon: 'arrow-back', color: 'white', size: 30, onPress: () => navigate('Home') }}//navigate('Note', {}) }}
+          leftComponent={{ icon: 'arrow-back', color: 'white', size: 30, onPress: () => navigate('Home') }}
           centerComponent={{ text: this.state.editionMode?'Edición nota':'Nueva nota', style: { color: 'white', fontSize: 20, fontWeight: 'bold' } }}
           rightComponent={{ icon: 'save', color: 'white', size: 30, onPress: () => this.saveNote() }}
         />
@@ -116,7 +100,7 @@ export default class NoteScreen extends Component<Props> {
 
           <CheckBox
             title='Privada'
-            checked={ this.state.privated }//this.state.checked}
+            checked={ this.state.privated }
             checkedColor='black'
             onIconPress={ () => this.setState({privated: !this.state.privated}) }
             containerStyle={{backgroundColor: 'white', borderWidth: 0}}
@@ -125,42 +109,23 @@ export default class NoteScreen extends Component<Props> {
           {this.state.editionMode && 
             <ActionButton
               buttonColor="rgba(231,76,60,1)"
-              onPress={() => this.setState({delete: true})}
+              onPress={ () => this.deleteModalRef.current.showModal() } 
               degrees={0}
               renderIcon={() => <Icon name='trash' size={30} />}
           />}
+        
+          <ModalAlert
+            ref = { this.deleteModalRef }
+            message = '¿Está seguro de que desea eliminar la nota?'
+            onAcceptPress = { () => this.deleteNote() }
+            onCancelPress = { () => this.deleteModalRef.current.hideModal() }
+          />
 
-        <Modal isVisible={this.state.delete}>
-          <View style={styles.modalContent}>
-            <Text style={{color: 'black', fontSize: 20, textAlign: 'center'}}>¿Está seguro de que desea eliminar la nota?</Text>
-            <View style={{flexDirection: 'row'}}>
-              <TouchableOpacity onPress={() => this.setState({delete: false})}>
-                <View style={styles.modalButton}>
-                  <Text style={{color: 'white'}}>Cancelar</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => this.deleteNote()}>
-                <View style={styles.modalButton}>
-                  <Text style={{color: 'white'}}>Aceptar</Text>
-                </View>
-              </TouchableOpacity>  
-            </View>            
-          </View>
-        </Modal>          
-
-        <Modal isVisible={this.state.showErrors}>
-          <View style={styles.modalContent}>
-            <Text style={{color: 'black', fontSize: 20, textAlign: 'center'}}>Complete todos los campos</Text>
-            <View style={{flexDirection: 'row'}}>
-              <TouchableOpacity onPress={() => this.setState({showErrors: false})}>
-                <View style={styles.modalButton}>
-                  <Text style={{color: 'white'}}>Aceptar</Text>
-                </View>
-              </TouchableOpacity>  
-            </View>            
-          </View>
-        </Modal>
-          
+          <ModalAlert
+            ref = { this.validateModalRef }
+            message = 'Complete todos los campos'
+            onAcceptPress = { () => this.validateModalRef.current.hideModal() }
+          />          
         </View>        
       </View>
     );
@@ -171,20 +136,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'white',
-  },
-  header: {
-    flex: 1, 
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 10,
-    paddingLeft: 5,
-    paddingRight: 5,
-    //paddingBottom: -50,
-   // borderBottomColor: 'black',
-   // borderBottomWidth: 1,
-    //backgroundColor: 'black'
-    backgroundColor: '#2196F3'  
+    backgroundColor: 'white', 
   },
   title: {
     fontSize: 30,
@@ -218,23 +170,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     height: 22,
     color: 'white',
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 22,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: 'black'//"rgba(0, 0, 0, 0.1)"
-  },
-  modalButton: {
-    backgroundColor: '#476DC5',
-    padding: 12,
-    margin: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 4,
-    borderColor: "rgba(0, 0, 0, 0.1)"
-  },
+  }
 });
